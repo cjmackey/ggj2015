@@ -73,17 +73,29 @@ app.post('/games/:game_id/actions/:player_id', function(req, res) {
   if(game.actions[player_id]) {
     res.send('oops! repeat');
   } else {
-    console.log(req.body);
-    game.actions[player_id] = req.body;
+    console.log(req.body.actions);
+    game.actions[player_id] = req.body.actions;
     res.send('ok');
   }
 });
 
-app.get('/games/:game_id/actions/:player_id', function(req, res) {
+app.get('/games/:game_id/actions', function(req, res) {
   var player_id = req.player_id;
   var game_id = req.game_id;
   var game = games[game_id];
-  res.send(game.actions[player_id] || 'wait');
+  var i;
+  if(Object.keys(game.actions).length == 2) {
+    s = ''
+    for(i=0; i<game.players.length; i++) {
+      s += game.players[i];
+      s += '|'
+      s += game.actions[game.players[i]];
+      s += '|'
+    }
+    res.send(s);
+  } else {
+    res.send('wait');
+  }
 });
 
 var server = app.listen((process.env.PORT || 5000), function () {
